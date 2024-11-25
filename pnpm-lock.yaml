@@ -8,7 +8,7 @@ importers:
 
   .: {}
 
-  packages/docs:
+  docs:
     dependencies:
       '@docusaurus/core':
         specifier: ^3.6.3
@@ -33,7 +33,7 @@ importers:
         version: 18.3.1(react@18.3.1)
       react-image-upload:
         specifier: workspace:*
-        version: link:../react-image-upload
+        version: link:../packages/react-image-upload
     devDependencies:
       '@docusaurus/module-type-aliases':
         specifier: ^3.6.3
@@ -7911,7 +7911,7 @@ snapshots:
 
   '@types/sax@1.2.7':
     dependencies:
-      '@types/node': 17.0.45
+      '@types/node': 22.9.3
 
   '@types/send@0.17.4':
     dependencies:
