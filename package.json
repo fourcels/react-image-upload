@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "docs:dev": "pnpm run dev & pnpm run -F docs start",
+    "docs:build": "pnpm run build && pnpm run -F docs build",
+    "dev": "pnpm run -F react-image-upload dev",
+    "build": "pnpm run -F react-image-upload build"
+  }
+}
