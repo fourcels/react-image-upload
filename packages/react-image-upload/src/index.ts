@@ -1,1 +1,1 @@
-export * from "./MyDropzone";
+export * from "./ImageUpload";
