@@ -1,0 +1,68 @@
+.ImageUpload {
+  &__root {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  &__item {
+    position: relative;
+    box-sizing: border-box;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #d9d9d9;
+  }
+  &__item:hover &__actions {
+    opacity: 1;
+  }
+  &__actions {
+    position: absolute;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    top: 8px;
+    bottom: 8px;
+    left: 8px;
+    right: 8px;
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.45);
+    opacity: 0;
+    transition: opacity 0.24s ease-in-out;
+    &_btn {
+      cursor: pointer;
+    }
+  }
+  &__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  &__dropzone {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px dashed #d9d9d9;
+    background-color: #fafafa;
+    outline: none;
+    transition: border 0.24s ease-in-out;
+    cursor: pointer;
+
+    &:hover {
+      border-color: #2196f3;
+    }
+
+    &.dragAccept {
+      border-color: #00e676;
+    }
+    &.dragReject {
+      border-color: #ff1744;
+    }
+    &.disabled {
+      opacity: 0.6;
+    }
+  }
+}

@@ -38,7 +38,9 @@ export default function Home(): JSX.Element {
     >
       <HomepageHeader />
       <main>
-        <ImageUpload />
+        <div className="container margin-vert--md">
+          <ImageUpload />
+        </div>
       </main>
     </Layout>
   );
