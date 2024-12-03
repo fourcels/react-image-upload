@@ -1,6 +1,8 @@
-import React, { useCallback } from "react";
+import React, { createRef, useCallback, useRef } from "react";
 import Dropzone, { DropzoneProps } from "react-dropzone";
 import { PhotoProvider, PhotoView } from "react-photo-view";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
+import { v7 as uuidv7 } from "uuid";
 import clsx from "clsx";
 import "react-photo-view/dist/react-photo-view.css";
 import "./style.css";
@@ -34,9 +36,9 @@ const RemoveIcon = () => (
     strokeLinecap="round"
     strokeLinejoin="round"
   >
-    <path d="M3 6h18" />
-    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+    <circle cx="12" cy="12" r="10" />
+    <path d="m15 9-6 6" />
+    <path d="m9 9 6 6" />
   </svg>
 );
 
@@ -61,53 +63,118 @@ export type ImageUploadProps = {
   width?: number;
   height?: number;
   dropzoneProps?: DropzoneProps;
+  value?: string | ValueItem | (string | ValueItem)[];
+  onChange?: (value: ImageItem[]) => void;
+  max?: number;
+};
+
+type ValueItem = {
+  url: string;
+  name?: string;
+};
+
+type ImageItem = {
+  id: string;
+  url: string;
+  name?: string;
+  nodeRef: React.RefObject<HTMLDivElement>;
 };
 
 export function ImageUpload(props: ImageUploadProps) {
-  const { width = 100, height = 100, dropzoneProps } = props;
-  const [images, setImages] = React.useState([""]);
+  const {
+    width = 100,
+    height = width,
+    value,
+    max = Infinity,
+    onChange,
+    dropzoneProps,
+  } = props;
+
+  const [images, setImages] = React.useState<ImageItem[]>(() => {
+    let valueInner: (string | ValueItem)[] = [];
+    if (!value) {
+      valueInner = [];
+    } else if (Array.isArray(value)) {
+      valueInner = value;
+    } else {
+      valueInner = [value];
+    }
+    return valueInner.map<ImageItem>((item) => {
+      if (typeof item === "string") {
+        return {
+          id: uuidv7(),
+          nodeRef: createRef(),
+          url: item,
+        };
+      } else {
+        return {
+          id: uuidv7(),
+          nodeRef: createRef(),
+          ...item,
+        };
+      }
+    });
+  });
+
+  const dropzoneRef = useRef<HTMLDivElement>();
+
   const onDropAccepted = useCallback((acceptedFiles) => {
     setImages((images) => {
-      return images.concat(
-        acceptedFiles.map((item) => URL.createObjectURL(item))
+      images = images.concat(
+        acceptedFiles.map((item) => ({
+          id: uuidv7(),
+          url: URL.createObjectURL(item),
+          name: item.name,
+          nodeRef: createRef(),
+        }))
       );
+      onChange?.(images);
+      return images;
     });
   }, []);
 
   const onRemoveImage = useCallback((idx: number) => {
     setImages((images) => {
-      return images.filter((_, index) => index != idx);
+      images = images.filter((_, index) => index != idx);
+      onChange?.(images);
+      return images;
     });
   }, []);
 
   return (
     <PhotoProvider>
-      <div className="ImageUpload__root">
+      <TransitionGroup className="ImageUpload__root">
         {images.map((item, idx) => (
-          <div
-            key={item}
-            className="ImageUpload__item"
-            style={{ height, width }}
+          <CSSTransition
+            nodeRef={item.nodeRef}
+            key={item.id}
+            timeout={200}
+            classNames="ImageUpload__fade"
           >
-            <img src={item} className="ImageUpload__img" />
-            <div className="ImageUpload__actions">
-              <PhotoView src={item}>
-                <span
-                  className="ImageUpload__actions_btn"
-                  title="Preview image"
-                >
+            <div
+              ref={item.nodeRef}
+              className="ImageUpload__item"
+              style={{ height, width }}
+            >
+              <img
+                src={item.url}
+                className="ImageUpload__img"
+                alt={item.name}
+              />
+              <PhotoView src={item.url}>
+                <div className="ImageUpload__preview" title="Preview image">
                   <PreviewIcon />
-                </span>
+                </div>
               </PhotoView>
               <span
                 onClick={() => onRemoveImage(idx)}
-                className="ImageUpload__actions_btn"
+                className="ImageUpload__remove"
                 title="Remove image"
               >
                 <RemoveIcon />
               </span>
             </div>
-          </div>
+          </CSSTransition>
         ))}
         <Dropzone
           onDropAccepted={onDropAccepted}
@@ -121,21 +188,28 @@ export function ImageUpload(props: ImageUploadProps) {
             isDragReject,
             isDragActive,
           }) => (
-            <div
-              {...getRootProps()}
-              className={clsx("ImageUpload__dropzone", {
-                dragAccept: isDragActive && isDragAccept,
-                dragReject: isDragActive && isDragReject,
-              })}
-              style={{ height, width }}
+            <CSSTransition
+              nodeRef={dropzoneRef}
+              timeout={200}
+              classNames="ImageUpload__fade"
             >
-              <input {...getInputProps()} />
-              <PlusIcon />
-              <div>Upload</div>
-            </div>
+              <div
+                ref={dropzoneRef}
+                {...getRootProps()}
+                className={clsx("ImageUpload__dropzone", {
+                  dragAccept: isDragActive && isDragAccept,
+                  dragReject: isDragActive && isDragReject,
+                })}
+                style={{ height, width }}
+              >
+                <input {...getInputProps()} />
+                <PlusIcon />
+                <div>Upload</div>
+              </div>
+            </CSSTransition>
           )}
         </Dropzone>
-      </div>
+      </TransitionGroup>
     </PhotoProvider>
   );
 }

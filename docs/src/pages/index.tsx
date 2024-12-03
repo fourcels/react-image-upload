@@ -39,7 +39,14 @@ export default function Home(): JSX.Element {
       <HomepageHeader />
       <main>
         <div className="container margin-vert--md">
-          <ImageUpload />
+          <ImageUpload
+            max={3}
+            value={[
+              "/img/docusaurus.png",
+              { url: "/img/docusaurus-social-card.jpg", name: "docusaurus" },
+            ]}
+            onChange={(value) => console.log(value)}
+          />
         </div>
       </main>
     </Layout>
