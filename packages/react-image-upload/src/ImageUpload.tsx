@@ -1,9 +1,9 @@
 import React, { createRef, useCallback, useRef } from "react";
-import Dropzone, { DropzoneProps } from "react-dropzone";
+import { DropzoneProps, useDropzone } from "react-dropzone";
 import { PhotoProvider, PhotoView } from "react-photo-view";
-import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { v7 as uuidv7 } from "uuid";
 import clsx from "clsx";
+import { motion, AnimatePresence } from "motion/react";
 import "react-photo-view/dist/react-photo-view.css";
 import "./style.css";
 
@@ -116,8 +116,6 @@ export function ImageUpload(props: ImageUploadProps) {
     });
   });
 
-  const dropzoneRef = useRef<HTMLDivElement>();
-
   const onDropAccepted = useCallback((acceptedFiles) => {
     setImages((images) => {
       images = images.concat(
@@ -141,20 +139,29 @@ export function ImageUpload(props: ImageUploadProps) {
     });
   }, []);
 
+  const {
+    getRootProps,
+    getInputProps,
+    isDragAccept,
+    isDragReject,
+    isDragActive,
+  } = useDropzone({
+    onDropAccepted,
+    accept: { "image/*": [] },
+  });
+
   return (
     <PhotoProvider>
-      <TransitionGroup className="ImageUpload__root">
-        {images.map((item, idx) => (
-          <CSSTransition
-            nodeRef={item.nodeRef}
-            key={item.id}
-            timeout={200}
-            classNames="ImageUpload__fade"
-          >
-            <div
-              ref={item.nodeRef}
+      <div className="ImageUpload__root">
+        <AnimatePresence mode="popLayout">
+          {images.map((item, idx) => (
+            <motion.div
+              key={item.id}
               className="ImageUpload__item"
               style={{ height, width }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
             >
               <img
                 src={item.url}
@@ -173,43 +180,26 @@ export function ImageUpload(props: ImageUploadProps) {
               >
                 <RemoveIcon />
               </span>
-            </div>
-          </CSSTransition>
-        ))}
-        <Dropzone
-          onDropAccepted={onDropAccepted}
-          accept={{ "image/*": [] }}
-          {...dropzoneProps}
-        >
-          {({
-            getRootProps,
-            getInputProps,
-            isDragAccept,
-            isDragReject,
-            isDragActive,
-          }) => (
-            <CSSTransition
-              nodeRef={dropzoneRef}
-              timeout={200}
-              classNames="ImageUpload__fade"
+            </motion.div>
+          ))}
+          {images.length < max && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              {...(getRootProps() as any)}
+              className={clsx("ImageUpload__dropzone", {
+                dragAccept: isDragActive && isDragAccept,
+                dragReject: isDragActive && isDragReject,
+              })}
+              style={{ height, width }}
             >
-              <div
-                ref={dropzoneRef}
-                {...getRootProps()}
-                className={clsx("ImageUpload__dropzone", {
-                  dragAccept: isDragActive && isDragAccept,
-                  dragReject: isDragActive && isDragReject,
-                })}
-                style={{ height, width }}
-              >
-                <input {...getInputProps()} />
-                <PlusIcon />
-                <div>Upload</div>
-              </div>
-            </CSSTransition>
+              <input {...getInputProps()} />
+              <PlusIcon />
+              <div>Upload</div>
+            </motion.div>
           )}
-        </Dropzone>
-      </TransitionGroup>
+        </AnimatePresence>
+      </div>
     </PhotoProvider>
   );
 }

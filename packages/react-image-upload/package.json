@@ -13,14 +13,13 @@
   "license": "ISC",
   "dependencies": {
     "clsx": "^2.1.1",
+    "motion": "^11.13.1",
     "react-dropzone": "^14.3.5",
     "react-photo-view": "^1.2.6",
-    "react-transition-group": "^4.4.5",
     "uuid": "^11.0.3"
   },
   "devDependencies": {
     "@types/react": "^18.3.12",
-    "@types/react-transition-group": "^4.4.11",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.49",
     "postcss-nested": "^7.0.2",

@@ -1,23 +1,11 @@
 .ImageUpload {
   &__root {
+    position: relative;
     display: flex;
     flex-wrap: wrap;
-    gap: 16px;
+    gap: 12px;
   }
 
-  &__fade {
-    &-enter-active {
-      opacity: 1;
-      transition: opacity 200ms ease-in;
-    }
-    &-exit {
-      opacity: 1;
-    }
-    &-exit-active {
-      opacity: 0;
-      transition: opacity 200ms ease-in;
-    }
-  }
   &__item {
     position: relative;
     box-sizing: border-box;
