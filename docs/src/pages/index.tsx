@@ -46,6 +46,11 @@ export default function Home(): JSX.Element {
               { url: "/img/docusaurus-social-card.jpg", name: "docusaurus" },
             ]}
             onChange={(value) => console.log(value)}
+            onUpload={async (image) => {
+              return new Promise((resolve) =>
+                setTimeout(() => resolve("/img/docusaurus.png"), 2000)
+              );
+            }}
           />
         </div>
       </main>

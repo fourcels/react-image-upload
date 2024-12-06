@@ -59,6 +59,22 @@ const PreviewIcon = () => (
   </svg>
 );
 
+const LoadingIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+  </svg>
+);
+
 export type ImageUploadProps = {
   width?: number;
   height?: number;
@@ -66,6 +82,7 @@ export type ImageUploadProps = {
   value?: string | ValueItem | (string | ValueItem)[];
   onChange?: (value: ImageItem[]) => void;
   max?: number;
+  onUpload?: (file: File) => Promise<string>;
 };
 
 type ValueItem = {
@@ -75,8 +92,10 @@ type ValueItem = {
 
 type ImageItem = {
   id: string;
-  url: string;
+  url?: string;
   name?: string;
+  file?: File;
+  loading?: boolean;
 };
 
 export function ImageUpload(props: ImageUploadProps) {
@@ -86,6 +105,7 @@ export function ImageUpload(props: ImageUploadProps) {
     value = [],
     max = Infinity,
     onChange,
+    onUpload,
     dropzoneOptions,
   } = props;
 
@@ -101,19 +121,35 @@ export function ImageUpload(props: ImageUploadProps) {
       }
       return {
         id: uuidv7(),
+        loading: false,
         ...item,
       };
     });
   });
 
-  const onDropAccepted = useCallback((acceptedFiles) => {
+  const onDropAccepted = useCallback((acceptedFiles: File[]) => {
     setImages((images) => {
       images = images.concat(
-        acceptedFiles.map((item) => ({
-          id: uuidv7(),
-          url: URL.createObjectURL(item),
-          name: item.name,
-        }))
+        acceptedFiles.map((file) => {
+          const imageItem: ImageItem = {
+            id: uuidv7(),
+            name: file.name,
+            loading: true,
+            file: file,
+          };
+          onUpload?.(file).then((url) =>
+            setImages((images) =>
+              images.map((item) => {
+                if (item.id === imageItem.id) {
+                  item.loading = false;
+                  item.url = url;
+                }
+                return item;
+              })
+            )
+          );
+          return imageItem;
+        })
       );
       onChange?.(images);
       return images;
@@ -153,23 +189,29 @@ export function ImageUpload(props: ImageUploadProps) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              <img
-                src={item.url}
-                className="ImageUpload__img"
-                alt={item.name}
-              />
-              <PhotoView src={item.url}>
-                <div className="ImageUpload__preview" title="Preview image">
-                  <PreviewIcon />
-                </div>
-              </PhotoView>
-              <span
-                onClick={() => onRemoveImage(idx)}
-                className="ImageUpload__remove"
-                title="Remove image"
-              >
-                <RemoveIcon />
-              </span>
+              {item.loading ? (
+                <LoadingIcon />
+              ) : (
+                <>
+                  <img
+                    src={item.url}
+                    className="ImageUpload__img"
+                    alt={item.name}
+                  />
+                  <PhotoView src={item.url}>
+                    <div className="ImageUpload__preview" title="Preview image">
+                      <PreviewIcon />
+                    </div>
+                  </PhotoView>
+                  <span
+                    onClick={() => onRemoveImage(idx)}
+                    className="ImageUpload__remove"
+                    title="Remove image"
+                  >
+                    <RemoveIcon />
+                  </span>
+                </>
+              )}
             </motion.div>
           ))}
           {images.length < max && (
