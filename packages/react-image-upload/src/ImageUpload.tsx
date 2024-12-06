@@ -1,5 +1,5 @@
-import React, { createRef, useCallback, useRef } from "react";
-import { DropzoneProps, useDropzone } from "react-dropzone";
+import React, { useCallback } from "react";
+import { DropzoneOptions, useDropzone } from "react-dropzone";
 import { PhotoProvider, PhotoView } from "react-photo-view";
 import { v7 as uuidv7 } from "uuid";
 import clsx from "clsx";
@@ -62,7 +62,7 @@ const PreviewIcon = () => (
 export type ImageUploadProps = {
   width?: number;
   height?: number;
-  dropzoneProps?: DropzoneProps;
+  dropzoneOptions?: DropzoneOptions;
   value?: string | ValueItem | (string | ValueItem)[];
   onChange?: (value: ImageItem[]) => void;
   max?: number;
@@ -77,42 +77,32 @@ type ImageItem = {
   id: string;
   url: string;
   name?: string;
-  nodeRef: React.RefObject<HTMLDivElement>;
 };
 
 export function ImageUpload(props: ImageUploadProps) {
   const {
     width = 100,
     height = width,
-    value,
+    value = [],
     max = Infinity,
     onChange,
-    dropzoneProps,
+    dropzoneOptions,
   } = props;
 
   const [images, setImages] = React.useState<ImageItem[]>(() => {
-    let valueInner: (string | ValueItem)[] = [];
-    if (!value) {
-      valueInner = [];
-    } else if (Array.isArray(value)) {
-      valueInner = value;
-    } else {
-      valueInner = [value];
+    let valueInner = value;
+    if (!Array.isArray(valueInner)) {
+      valueInner = [valueInner];
     }
+
     return valueInner.map<ImageItem>((item) => {
       if (typeof item === "string") {
-        return {
-          id: uuidv7(),
-          nodeRef: createRef(),
-          url: item,
-        };
-      } else {
-        return {
-          id: uuidv7(),
-          nodeRef: createRef(),
-          ...item,
-        };
+        item = { url: item };
       }
+      return {
+        id: uuidv7(),
+        ...item,
+      };
     });
   });
 
@@ -123,7 +113,6 @@ export function ImageUpload(props: ImageUploadProps) {
           id: uuidv7(),
           url: URL.createObjectURL(item),
           name: item.name,
-          nodeRef: createRef(),
         }))
       );
       onChange?.(images);
@@ -148,6 +137,7 @@ export function ImageUpload(props: ImageUploadProps) {
   } = useDropzone({
     onDropAccepted,
     accept: { "image/*": [] },
+    ...dropzoneOptions,
   });
 
   return (
@@ -184,8 +174,10 @@ export function ImageUpload(props: ImageUploadProps) {
           ))}
           {images.length < max && (
             <motion.div
+              key="dropzone"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
               {...(getRootProps() as any)}
               className={clsx("ImageUpload__dropzone", {
                 dragAccept: isDragActive && isDragAccept,
