@@ -6,6 +6,7 @@ import clsx from "clsx";
 import { motion, AnimatePresence } from "motion/react";
 import "react-photo-view/dist/react-photo-view.css";
 import "./style.css";
+import { PhotoProviderProps } from "react-photo-view/dist/PhotoProvider";
 
 const PlusIcon = () => (
   <svg
@@ -59,32 +60,6 @@ const PreviewIcon = () => (
   </svg>
 );
 
-const LoadingIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-  </svg>
-);
-
-export type ImageUploadProps = {
-  width?: number;
-  height?: number;
-  dropzoneOptions?: DropzoneOptions;
-  value?: string | ValueItem | (string | ValueItem)[];
-  onChange?: (value: ImageItem[]) => void;
-  max?: number;
-  onUpload?: (file: File) => Promise<string>;
-};
-
 type ValueItem = {
   url: string;
   name?: string;
@@ -98,6 +73,23 @@ type ImageItem = {
   loading?: boolean;
 };
 
+const defaultUpload = (file: File) => URL.createObjectURL(file);
+
+export type ImageUploadProps = {
+  width?: number;
+  height?: number;
+  dropzoneOptions?: DropzoneOptions;
+  photoProviderProps?: Omit<PhotoProviderProps, "children">;
+  value?: string | ValueItem | (string | ValueItem)[];
+  onChange?: (value: ImageItem[]) => void;
+  max?: number;
+  onUpload?: (file: File) => string | Promise<string>;
+  readonly?: boolean;
+  rootClassName?: string;
+  itemClassName?: string;
+  dropzoneClassName?: string;
+};
+
 export function ImageUpload(props: ImageUploadProps) {
   const {
     width = 100,
@@ -105,8 +97,13 @@ export function ImageUpload(props: ImageUploadProps) {
     value = [],
     max = Infinity,
     onChange,
-    onUpload,
+    onUpload = defaultUpload,
+    readonly,
     dropzoneOptions,
+    photoProviderProps,
+    rootClassName,
+    itemClassName,
+    dropzoneClassName,
   } = props;
 
   const [images, setImages] = React.useState<ImageItem[]>(() => {
@@ -115,46 +112,45 @@ export function ImageUpload(props: ImageUploadProps) {
       valueInner = [valueInner];
     }
 
-    return valueInner.map<ImageItem>((item) => {
-      if (typeof item === "string") {
-        item = { url: item };
-      }
-      return {
-        id: uuidv7(),
-        loading: false,
-        ...item,
-      };
-    });
+    return valueInner
+      .map<ImageItem>((item) => {
+        if (typeof item === "string") {
+          item = { url: item };
+        }
+        return {
+          id: uuidv7(),
+          ...item,
+        };
+      })
+      .slice(0, max);
   });
 
-  const onDropAccepted = useCallback((acceptedFiles: File[]) => {
-    setImages((images) => {
-      images = images.concat(
-        acceptedFiles.map((file) => {
-          const imageItem: ImageItem = {
-            id: uuidv7(),
-            name: file.name,
-            loading: true,
-            file: file,
-          };
-          onUpload?.(file).then((url) =>
-            setImages((images) =>
-              images.map((item) => {
-                if (item.id === imageItem.id) {
-                  item.loading = false;
-                  item.url = url;
-                }
-                return item;
-              })
-            )
-          );
-          return imageItem;
-        })
-      );
-      onChange?.(images);
-      return images;
-    });
-  }, []);
+  const onDropAccepted = useCallback(
+    async (acceptedFiles: File[]) => {
+      const newImages = acceptedFiles
+        .slice(0, max - images.length)
+        .map<ImageItem>((file) => ({
+          id: uuidv7(),
+          name: file.name,
+          loading: true,
+          file,
+        }));
+      setImages((images) => {
+        images = images.concat(newImages);
+        Promise.all(
+          newImages.map(async (item) => {
+            item.url = await onUpload?.(item.file);
+            item.loading = false;
+            setImages((images) => {
+              return [...images];
+            });
+          })
+        ).then(() => onChange?.(images));
+        return images;
+      });
+    },
+    [images.length, max]
+  );
 
   const onRemoveImage = useCallback((idx: number) => {
     setImages((images) => {
@@ -177,20 +173,20 @@ export function ImageUpload(props: ImageUploadProps) {
   });
 
   return (
-    <PhotoProvider>
-      <div className="ImageUpload__root">
+    <PhotoProvider {...photoProviderProps}>
+      <div className={clsx("ImageUpload__root", rootClassName)}>
         <AnimatePresence mode="popLayout">
           {images.map((item, idx) => (
             <motion.div
               key={item.id}
-              className="ImageUpload__item"
+              className={clsx("ImageUpload__item", itemClassName)}
               style={{ height, width }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
               {item.loading ? (
-                <LoadingIcon />
+                <div className="ImageUpload__loading"></div>
               ) : (
                 <>
                   <img
@@ -203,25 +199,27 @@ export function ImageUpload(props: ImageUploadProps) {
                       <PreviewIcon />
                     </div>
                   </PhotoView>
-                  <span
-                    onClick={() => onRemoveImage(idx)}
-                    className="ImageUpload__remove"
-                    title="Remove image"
-                  >
-                    <RemoveIcon />
-                  </span>
+                  {!readonly && (
+                    <span
+                      onClick={() => onRemoveImage(idx)}
+                      className="ImageUpload__remove"
+                      title="Remove image"
+                    >
+                      <RemoveIcon />
+                    </span>
+                  )}
                 </>
               )}
             </motion.div>
           ))}
-          {images.length < max && (
+          {!readonly && images.length < max && (
             <motion.div
               key="dropzone"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               {...(getRootProps() as any)}
-              className={clsx("ImageUpload__dropzone", {
+              className={clsx("ImageUpload__dropzone", dropzoneClassName, {
                 dragAccept: isDragActive && isDragAccept,
                 dragReject: isDragActive && isDragReject,
               })}

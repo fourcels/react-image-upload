@@ -46,14 +46,35 @@ export default function Home(): JSX.Element {
               { url: "/img/docusaurus-social-card.jpg", name: "docusaurus" },
             ]}
             onChange={(value) => console.log(value)}
-            onUpload={async (image) => {
-              return new Promise((resolve) =>
-                setTimeout(() => resolve("/img/docusaurus.png"), 2000)
-              );
+            onUpload={async (file) => {
+              return new Promise((resovle) => {
+                setTimeout(() => {
+                  resovle(URL.createObjectURL(file));
+                }, 1000 * getRandomInt(5));
+              });
+            }}
+          />
+          <ImageUpload
+            value={[
+              "/img/docusaurus.png",
+              "/img/docusaurus.png",
+              "/img/docusaurus.png",
+              "/img/docusaurus.png",
+              "/img/docusaurus.png",
+              "/img/docusaurus.png",
+              { url: "/img/docusaurus-social-card.jpg", name: "docusaurus" },
+            ]}
+            readonly
+            photoProviderProps={{
+              maskOpacity: 0.6,
             }}
           />
         </div>
       </main>
     </Layout>
   );
+}
+
+function getRandomInt(max) {
+  return Math.floor(Math.random() * max);
 }
