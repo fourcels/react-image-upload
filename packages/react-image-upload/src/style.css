@@ -4,6 +4,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
+    color: #1c1e21;
   }
 
   &__item {
@@ -16,7 +17,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #fff;
+    background-color: #fafafa;
   }
   &__loading {
     display: inline-flex;
