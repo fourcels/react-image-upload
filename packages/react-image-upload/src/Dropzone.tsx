@@ -18,35 +18,28 @@ const PlusIcon = () => (
   </svg>
 );
 
-type DropzoneProps = {
-  dropzoneOptions?: DropzoneOptions;
-  dropzoneClassName?: string;
-  width?: number;
-  height?: number;
+export type DropzoneProps = {
+  options?: DropzoneOptions;
+  className?: string;
 };
 
 export function Dropzone(props: DropzoneProps) {
-  const { width, height, dropzoneOptions, dropzoneClassName } = props;
-
+  const { className, options } = props;
   const {
     getRootProps,
     getInputProps,
     isDragActive,
     isDragAccept,
     isDragReject,
-  } = useDropzone(dropzoneOptions);
+  } = useDropzone(options);
 
   return (
     <div
       {...getRootProps({
-        className: clsx("ImageUpload__dropzone", dropzoneClassName, {
+        className: clsx("ImageUpload__dropzone", className, {
           dragAccept: isDragActive && isDragAccept,
           dragReject: isDragActive && isDragReject,
         }),
-        style: {
-          height,
-          width,
-        },
       })}
     >
       <input {...getInputProps()} />

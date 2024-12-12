@@ -33,13 +33,16 @@ function MyApp(props) {
     "/img/undraw_docusaurus_mountain.svg",
     "/img/undraw_docusaurus_react.svg",
   ]}
-  max={3}
-  dropzoneOptions={{ noDrag: true }}
+  max={5}
+  dropzoneOptions={{ onDragEnter: (evt) => console.log(evt) }}
   photoProviderProps={{ maskOpacity: 0.8 }}
   onChange={(value) => console.log(value)}
   onUpload={(file) =>
     new Promise((resolve) =>
-      setTimeout(() => resolve(URL.createObjectURL(file)), 3000)
+      setTimeout(
+        () => resolve(URL.createObjectURL(file)),
+        1000 * Math.floor(Math.random() * 5)
+      )
     )
   }
 />

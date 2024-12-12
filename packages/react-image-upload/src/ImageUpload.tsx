@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "motion/react";
 import "react-photo-view/dist/react-photo-view.css";
 import "./style.css";
 import { PhotoProviderProps } from "react-photo-view/dist/PhotoProvider";
-import { Dropzone } from "./Dropzone";
+import { Dropzone, DropzoneProps } from "./Dropzone";
 
 const RemoveIcon = () => (
   <svg
@@ -190,16 +190,15 @@ export function ImageUpload(props: ImageUploadProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              style={{ height, width }}
             >
               <Dropzone
-                dropzoneOptions={{
+                options={{
                   onDropAccepted,
                   accept: { "image/*": [] },
                   ...dropzoneOptions,
                 }}
-                dropzoneClassName={dropzoneClassName}
-                width={width}
-                height={height}
+                className={dropzoneClassName}
               />
             </motion.div>
           )}
