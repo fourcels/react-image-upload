@@ -3,25 +3,57 @@ title: Getting Started
 sidebar_position: 1
 ---
 
-import BrowserWindow from "@site/src/components/BrowserWindow";
-import { ImageUpload } from "react-image-upload";
-
 ## Install
 
 ```bash npm2yarn
 npm install react-image-upload
 ```
 
-## Quick start
+## Usage
 
-```tsx
+```jsx
 import { ImageUpload } from "react-image-upload";
 
-<ImageUpload />;
+function MyApp(props) {
+  return <ImageUpload />;
+}
 ```
 
-```mdx-code-block
-<BrowserWindow minHeight={240}>
-  <ImageUpload />
-</BrowserWindow>
+### Basic
+
+```jsx live
+<ImageUpload />
+```
+
+### Advanced
+
+```jsx live
+<ImageUpload
+  value={[
+    "/img/undraw_docusaurus_mountain.svg",
+    "/img/undraw_docusaurus_react.svg",
+  ]}
+  max={3}
+  dropzoneOptions={{ noDrag: true }}
+  photoProviderProps={{ maskOpacity: 0.8 }}
+  onChange={(value) => console.log(value)}
+  onUpload={(file) =>
+    new Promise((resolve) =>
+      setTimeout(() => resolve(URL.createObjectURL(file)), 3000)
+    )
+  }
+/>
+```
+
+### Readonly
+
+```jsx live
+<ImageUpload
+  value={[
+    "/img/undraw_docusaurus_mountain.svg",
+    "/img/undraw_docusaurus_react.svg",
+    "/img/undraw_docusaurus_tree.svg",
+  ]}
+  readonly
+/>
 ```

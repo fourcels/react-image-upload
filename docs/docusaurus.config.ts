@@ -50,6 +50,7 @@ const config: Config = {
       } satisfies Preset.Options,
     ],
   ],
+  themes: ["@docusaurus/theme-live-codeblock"],
 
   themeConfig: {
     colorMode: {

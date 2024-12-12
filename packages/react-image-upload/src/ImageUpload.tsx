@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { DropzoneOptions, useDropzone } from "react-dropzone";
+import { DropzoneOptions } from "react-dropzone";
 import { PhotoProvider, PhotoView } from "react-photo-view";
 import { v7 as uuidv7 } from "uuid";
 import clsx from "clsx";
@@ -7,23 +7,7 @@ import { motion, AnimatePresence } from "motion/react";
 import "react-photo-view/dist/react-photo-view.css";
 import "./style.css";
 import { PhotoProviderProps } from "react-photo-view/dist/PhotoProvider";
-
-const PlusIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M5 12h14" />
-    <path d="M12 5v14" />
-  </svg>
-);
+import { Dropzone } from "./Dropzone";
 
 const RemoveIcon = () => (
   <svg
@@ -160,18 +144,6 @@ export function ImageUpload(props: ImageUploadProps) {
     });
   }, []);
 
-  const {
-    getRootProps,
-    getInputProps,
-    isDragAccept,
-    isDragReject,
-    isDragActive,
-  } = useDropzone({
-    onDropAccepted,
-    accept: { "image/*": [] },
-    ...dropzoneOptions,
-  });
-
   return (
     <PhotoProvider {...photoProviderProps}>
       <div className={clsx("ImageUpload__root", rootClassName)}>
@@ -218,16 +190,17 @@ export function ImageUpload(props: ImageUploadProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              {...(getRootProps() as any)}
-              className={clsx("ImageUpload__dropzone", dropzoneClassName, {
-                dragAccept: isDragActive && isDragAccept,
-                dragReject: isDragActive && isDragReject,
-              })}
-              style={{ height, width }}
             >
-              <input {...getInputProps()} />
-              <PlusIcon />
-              <div>Upload</div>
+              <Dropzone
+                dropzoneOptions={{
+                  onDropAccepted,
+                  accept: { "image/*": [] },
+                  ...dropzoneOptions,
+                }}
+                dropzoneClassName={dropzoneClassName}
+                width={width}
+                height={height}
+              />
             </motion.div>
           )}
         </AnimatePresence>
