@@ -1,0 +1,47 @@
+---
+title: API
+sidebar_position: 2
+---
+
+## ImageUploadProps
+
+| Name               | Type                                                 | Default                                   |
+| ------------------ | ---------------------------------------------------- | ----------------------------------------- |
+| children           | React.ReactNode                                      |                                           |
+| width              | `number`                                             | 100                                       |
+| height             | `number`                                             | `width`                                   |
+| value              | `string` \| `ValueItem` \| `(string \| ValueItem)[]` | []                                        |
+| onChange           | (value: `ImageItem[]`) => void                       |                                           |
+| onUpload           | (file: `File`) => `string` \| `Promise<string>`      | (file: File) => URL.createObjectURL(file) |
+| max                | `number`                                             | Infinity                                  |
+| readonly           | `boolean`                                            |                                           |
+| className          | `string`                                             |                                           |
+| itemClassName      | `string`                                             |                                           |
+| dropzoneClassName  | `string`                                             |                                           |
+| dropzoneOptions    | DropzoneOptions                                      |                                           |
+| photoProviderProps | Omit\<PhotoProviderProps, "children"\>               |                                           |
+
+### Types
+
+```ts
+type ValueItem = {
+  url: string;
+  name?: string;
+};
+
+type ImageItem = {
+  id: string;
+  url?: string;
+  name?: string;
+  file?: File;
+  loading?: boolean;
+};
+```
+
+## DropzoneOptions
+
+[react-dropzone](https://react-dropzone.js.org/#section-components)
+
+## PhotoProviderProps
+
+[react-photo-view](https://react-photo-view.vercel.app/en-US/docs/api#photoprovider)

@@ -69,7 +69,7 @@ export type ImageUploadProps = {
   max?: number;
   onUpload?: (file: File) => string | Promise<string>;
   readonly?: boolean;
-  rootClassName?: string;
+  className?: string;
   itemClassName?: string;
   dropzoneClassName?: string;
   children?: React.ReactNode;
@@ -86,7 +86,7 @@ export function ImageUpload(props: ImageUploadProps) {
     readonly,
     dropzoneOptions,
     photoProviderProps,
-    rootClassName,
+    className,
     itemClassName,
     dropzoneClassName,
     children,
@@ -148,7 +148,7 @@ export function ImageUpload(props: ImageUploadProps) {
 
   return (
     <PhotoProvider {...photoProviderProps}>
-      <div className={clsx("ImageUpload__root", rootClassName)}>
+      <div className={clsx("ImageUpload__root", className)}>
         <AnimatePresence mode="popLayout">
           {images.map((item, idx) => (
             <motion.div
