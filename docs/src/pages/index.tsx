@@ -5,7 +5,7 @@ import Layout from "@theme/Layout";
 import Heading from "@theme/Heading";
 
 import styles from "./index.module.css";
-import { ImageUpload } from "react-image-upload";
+import { ImageUpload } from "@fourcels/react-image-upload";
 
 function HomepageHeader() {
   const { siteConfig } = useDocusaurusContext();
