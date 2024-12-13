@@ -21,10 +21,13 @@ const PlusIcon = () => (
 export type DropzoneProps = {
   options?: DropzoneOptions;
   className?: string;
+  width?: number;
+  height?: number;
+  children?: React.ReactNode;
 };
 
 export function Dropzone(props: DropzoneProps) {
-  const { className, options } = props;
+  const { className, options, children, width, height } = props;
   const {
     getRootProps,
     getInputProps,
@@ -37,14 +40,23 @@ export function Dropzone(props: DropzoneProps) {
     <div
       {...getRootProps({
         className: clsx("ImageUpload__dropzone", className, {
+          "ImageUpload__dropzone-default": !children,
           dragAccept: isDragActive && isDragAccept,
           dragReject: isDragActive && isDragReject,
         }),
+        style: {
+          width,
+          height,
+        },
       })}
     >
       <input {...getInputProps()} />
-      <PlusIcon />
-      <div>Upload</div>
+      {children || (
+        <>
+          <PlusIcon />
+          <div>Upload</div>
+        </>
+      )}
     </div>
   );
 }

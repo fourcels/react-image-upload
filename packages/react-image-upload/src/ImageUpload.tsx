@@ -72,6 +72,7 @@ export type ImageUploadProps = {
   rootClassName?: string;
   itemClassName?: string;
   dropzoneClassName?: string;
+  children?: React.ReactNode;
 };
 
 export function ImageUpload(props: ImageUploadProps) {
@@ -88,6 +89,7 @@ export function ImageUpload(props: ImageUploadProps) {
     rootClassName,
     itemClassName,
     dropzoneClassName,
+    children,
   } = props;
 
   const [images, setImages] = React.useState<ImageItem[]>(() => {
@@ -190,7 +192,6 @@ export function ImageUpload(props: ImageUploadProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              style={{ height, width }}
             >
               <Dropzone
                 options={{
@@ -199,7 +200,11 @@ export function ImageUpload(props: ImageUploadProps) {
                   ...dropzoneOptions,
                 }}
                 className={dropzoneClassName}
-              />
+                width={width}
+                height={height}
+              >
+                {children}
+              </Dropzone>
             </motion.div>
           )}
         </AnimatePresence>
