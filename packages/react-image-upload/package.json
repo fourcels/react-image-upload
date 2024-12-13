@@ -41,11 +41,10 @@
     "react-dom": "^18.3.1"
   },
   "files": [
-    "dist",
-    "LICENSE",
-    "package.json"
+    "dist"
   ],
   "publishConfig": {
+    "registry": "https://registry.npmjs.org",
     "access": "public"
   }
 }
