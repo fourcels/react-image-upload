@@ -1,6 +1,6 @@
 {
   "name": "@fourcels/react-image-upload",
-  "version": "0.5.8",
+  "version": "0.5.7",
   "type": "module",
   "description": "A image upload component for React",
   "main": "./dist/index.js",
@@ -42,5 +42,9 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  }
 }
