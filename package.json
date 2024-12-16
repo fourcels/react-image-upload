@@ -5,6 +5,9 @@
     "docs:serve": "pnpm run -F docs serve",
     "dev": "pnpm run -F react-image-upload dev",
     "build": "pnpm run -F react-image-upload build",
-    "publish": "pnpm -F react-image-upload publish"
+    "ci:publish": "pnpm publish -r"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.10"
   }
 }
