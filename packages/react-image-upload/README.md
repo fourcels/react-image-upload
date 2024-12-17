@@ -2,11 +2,9 @@
 
 [![NPM version][npm-image]][npm-url]
 
-A image upload component for React base on
+A image upload component for React
 
-## Documentation
-
-Visit [https://github.com/fourcels/react-image-upload](https://github.com/fourcels/react-image-upload) to view the full documentation.
+Visit [react-image-upload](https://fourcels.github.io/react-image-upload/) to view the documentation and examples.
 
 ## Getting Started
 

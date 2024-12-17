@@ -5,21 +5,21 @@ sidebar_position: 2
 
 ## ImageUploadProps
 
-| Name               | Type                                                 | Default                                   |
-| ------------------ | ---------------------------------------------------- | ----------------------------------------- |
-| children           | React.ReactNode                                      |                                           |
-| width              | `number`                                             | 100                                       |
-| height             | `number`                                             | `width`                                   |
-| value              | `string` \| `ValueItem` \| `(string \| ValueItem)[]` | []                                        |
-| onChange           | (value: `ImageItem[]`) => void                       |                                           |
-| onUpload           | (file: `File`) => `string` \| `Promise<string>`      | (file: File) => URL.createObjectURL(file) |
-| max                | `number`                                             | Infinity                                  |
-| readonly           | `boolean`                                            |                                           |
-| className          | `string`                                             |                                           |
-| itemClassName      | `string`                                             |                                           |
-| dropzoneClassName  | `string`                                             |                                           |
-| dropzoneOptions    | DropzoneOptions                                      |                                           |
-| photoProviderProps | Omit\<PhotoProviderProps, "children"\>               |                                           |
+| Name               | Description                             | Type                                                 | Default                                   |
+| ------------------ | --------------------------------------- | ---------------------------------------------------- | ----------------------------------------- |
+| children           | custom upload zone                      | React.ReactNode                                      |                                           |
+| width              | image width                             | `number`                                             | 100                                       |
+| height             | image height                            | `number`                                             | `width`                                   |
+| value              | default images                          | `string` \| `ValueItem` \| `(string \| ValueItem)[]` | []                                        |
+| onChange           | callback for when the images changes    | (value: `ImageItem[]`) => void                       |                                           |
+| onUpload           | callback for when the drop event occurs | (file: `File`) => `string` \| `Promise<string>`      | (file: File) => URL.createObjectURL(file) |
+| max                | max image number                        | `number`                                             | Infinity                                  |
+| readonly           | for preview                             | `boolean`                                            |                                           |
+| className          | root className                          | `string`                                             |                                           |
+| itemClassName      | image className                         | `string`                                             |                                           |
+| dropzoneClassName  | dropzone className                      | `string`                                             |                                           |
+| dropzoneOptions    |                                         | DropzoneOptions                                      |                                           |
+| photoProviderProps |                                         | Omit\<PhotoProviderProps, "children"\>               |                                           |
 
 ### Types
 
