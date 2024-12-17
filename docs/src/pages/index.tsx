@@ -3,7 +3,6 @@ import Link from "@docusaurus/Link";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import Layout from "@theme/Layout";
 import Heading from "@theme/Heading";
-import useBaseUrl from "@docusaurus/useBaseUrl";
 
 import styles from "./index.module.css";
 import { ImageUpload } from "@fourcels/react-image-upload";
@@ -45,9 +44,9 @@ export default function Home(): JSX.Element {
         <div className={styles.example}>
           <ImageUpload
             value={[
-              useBaseUrl("img/undraw_docusaurus_mountain.svg"),
-              useBaseUrl("img/undraw_docusaurus_react.svg"),
-              useBaseUrl("img/undraw_docusaurus_tree.svg"),
+              "img/undraw_docusaurus_mountain.svg",
+              "img/undraw_docusaurus_react.svg",
+              "img/undraw_docusaurus_tree.svg",
             ]}
           />
         </div>

@@ -1,6 +1,12 @@
 # React Image Upload
 
-A image upload component for React
+[![NPM version][npm-image]][npm-url]
+
+A image upload component for React base on
+
+## Documentation
+
+Visit [https://github.com/fourcels/react-image-upload](https://github.com/fourcels/react-image-upload) to view the full documentation.
 
 ## Getting Started
 
@@ -19,3 +25,11 @@ function MyApp() {
   return <ImageUpload />;
 }
 ```
+
+[npm-image]: https://img.shields.io/npm/v/@fourcels/react-image-upload.svg?style=flat-square
+[npm-url]: https://www.npmjs.com/package/@fourcels/react-image-upload
+
+## Acknowledgments
+
+- [react-dropzone](https://github.com/react-dropzone/react-dropzone)
+- [react-photo-view](https://github.com/MinJieLiu/react-photo-view)
