@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "motion/react";
 import "react-photo-view/dist/react-photo-view.css";
 import "./style.css";
 import { PhotoProviderProps } from "react-photo-view/dist/PhotoProvider";
-import { Dropzone, DropzoneProps } from "./Dropzone";
+import { Dropzone } from "./Dropzone";
 
 const RemoveIcon = () => (
   <svg

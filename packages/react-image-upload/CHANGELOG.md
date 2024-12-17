@@ -1,5 +1,11 @@
 # @fourcels/react-image-upload
 
+## 0.5.11
+
+### Patch Changes
+
+- use client
+
 ## 0.5.10
 
 ### Patch Changes
