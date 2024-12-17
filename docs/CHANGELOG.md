@@ -1,5 +1,12 @@
 # docs
 
+## 0.0.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @fourcels/react-image-upload@0.5.12
+
 ## 0.0.8
 
 ### Patch Changes

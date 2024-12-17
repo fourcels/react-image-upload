@@ -1,5 +1,11 @@
 # @fourcels/react-image-upload
 
+## 0.5.12
+
+### Patch Changes
+
+- support react 19
+
 ## 0.5.11
 
 ### Patch Changes
