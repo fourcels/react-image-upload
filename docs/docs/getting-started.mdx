@@ -68,3 +68,30 @@ function MyApp() {
   readonly
 />
 ```
+
+### Reset
+
+```jsx live
+function MyApp() {
+  const imageUploadRef = React.useRef(null);
+
+  return (
+    <div>
+      <ImageUpload
+        ref={imageUploadRef}
+        value={[
+          "../img/undraw_docusaurus_mountain.svg",
+          "../img/undraw_docusaurus_react.svg",
+          "../img/undraw_docusaurus_tree.svg",
+        ]}
+      />
+      <button
+        className="button button--secondary margin-top--md"
+        onClick={() => imageUploadRef.current?.reset()}
+      >
+        Reset
+      </button>
+    </div>
+  );
+}
+```
