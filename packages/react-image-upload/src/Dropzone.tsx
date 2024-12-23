@@ -1,5 +1,7 @@
 import { DropzoneOptions, useDropzone } from "react-dropzone";
 import clsx from "clsx";
+import { forwardRef, useImperativeHandle } from "react";
+import { u } from "motion/react-client";
 
 const PlusIcon = () => (
   <svg
@@ -26,15 +28,18 @@ export type DropzoneProps = {
   children?: React.ReactNode;
 };
 
-export function Dropzone(props: DropzoneProps) {
+export const Dropzone = forwardRef<HTMLElement, DropzoneProps>((props, ref) => {
   const { className, options, children, width, height } = props;
   const {
+    rootRef,
     getRootProps,
     getInputProps,
     isDragActive,
     isDragAccept,
     isDragReject,
   } = useDropzone(options);
+
+  useImperativeHandle(ref, () => rootRef.current);
 
   return (
     <div
@@ -59,4 +64,6 @@ export function Dropzone(props: DropzoneProps) {
       )}
     </div>
   );
-}
+});
+
+Dropzone.displayName = "Dropzone";

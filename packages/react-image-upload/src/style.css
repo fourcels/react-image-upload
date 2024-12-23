@@ -88,7 +88,8 @@
     cursor: pointer;
     user-select: none;
 
-    &:hover {
+    &:hover,
+    &:focus {
       border-color: #2196f3;
     }
 

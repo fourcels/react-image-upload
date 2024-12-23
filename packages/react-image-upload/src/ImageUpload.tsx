@@ -1,7 +1,9 @@
 import React, {
   forwardRef,
   useCallback,
+  useEffect,
   useImperativeHandle,
+  useRef,
   useState,
 } from "react";
 import { DropzoneOptions } from "react-dropzone";
@@ -13,6 +15,7 @@ import "react-photo-view/dist/react-photo-view.css";
 import "./style.css";
 import { PhotoProviderProps } from "react-photo-view/dist/PhotoProvider";
 import { Dropzone } from "./Dropzone";
+import { use } from "motion/react-client";
 
 const RemoveIcon = () => (
   <svg
@@ -49,13 +52,8 @@ const PreviewIcon = () => (
   </svg>
 );
 
-type ValueItem = {
-  url: string;
-  name?: string;
-};
-
 type ImageItem = {
-  id: string;
+  id?: string;
   url?: string;
   name?: string;
   file?: File;
@@ -69,7 +67,7 @@ export type ImageUploadProps = {
   height?: number;
   dropzoneOptions?: DropzoneOptions;
   photoProviderProps?: Omit<PhotoProviderProps, "children">;
-  value?: string | ValueItem | (string | ValueItem)[];
+  value?: string | ImageItem | (string | ImageItem)[];
   onChange?: (value: ImageItem[]) => void;
   max?: number;
   onUpload?: (file: File) => string | Promise<string>;
@@ -80,12 +78,7 @@ export type ImageUploadProps = {
   children?: React.ReactNode;
 };
 
-export type ImageUploadRef = {
-  reset: (value?: string | ValueItem | (string | ValueItem)[]) => void;
-  value: ImageItem[];
-};
-
-export const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
+export const ImageUpload = forwardRef<HTMLElement, ImageUploadProps>(
   (props, ref) => {
     const {
       width = 100,
@@ -103,45 +96,39 @@ export const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
       children,
     } = props;
 
-    const getImages = useCallback(
-      (value: string | ValueItem | (string | ValueItem)[]) => {
-        if (!Array.isArray(value)) {
-          value = [value];
-        }
+    const dropzoneRef = useRef<HTMLElement>(null);
 
-        return value
-          .map<ImageItem>((item) => {
-            if (typeof item === "string") {
-              item = { url: item };
-            }
-            return {
-              id: uuidv7(),
-              ...item,
-            };
-          })
-          .slice(0, max);
-      },
-      [max]
-    );
+    useImperativeHandle(ref, () => dropzoneRef.current);
 
-    const [images, setImages] = useState<ImageItem[]>(() => getImages(value));
+    const getImages = useCallback(() => {
+      let innerValue = value;
+      if (!Array.isArray(innerValue)) {
+        innerValue = [innerValue];
+      }
 
-    useImperativeHandle(
-      ref,
-      () => ({
-        reset: (val = value) => {
-          setImages(getImages(val));
-        },
-        get value() {
-          return images;
-        },
-      }),
-      [value, images]
-    );
+      return innerValue
+        .map<ImageItem>((item) => {
+          if (typeof item === "string") {
+            item = { url: item };
+          }
+
+          return {
+            id: uuidv7(),
+            ...item,
+          };
+        })
+        .slice(0, max);
+    }, [value, max]);
+
+    const [images, setImages] = useState<ImageItem[]>(() => getImages());
+
+    useEffect(() => {
+      setImages(getImages());
+    }, [getImages]);
 
     const onDropAccepted = useCallback(
       async (acceptedFiles: File[]) => {
-        const newImages = acceptedFiles
+        const addImages = acceptedFiles
           .slice(0, max - images.length)
           .map<ImageItem>((file) => ({
             id: uuidv7(),
@@ -149,30 +136,29 @@ export const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
             loading: true,
             file,
           }));
-        setImages((images) => {
-          images = images.concat(newImages);
-          Promise.all(
-            newImages.map(async (item) => {
-              item.url = await onUpload?.(item.file);
-              item.loading = false;
-              setImages((images) => {
-                return [...images];
-              });
-            })
-          ).then(() => onChange?.(images));
-          return images;
-        });
+        const newImages = images.concat(addImages);
+        setImages(newImages);
+        Promise.all(
+          newImages.map(async (item) => {
+            item.url = await onUpload?.(item.file);
+            item.loading = false;
+            setImages((images) => {
+              return [...images];
+            });
+          })
+        ).then(() => onChange?.(newImages));
       },
-      [images.length, max]
+      [images, max, onChange]
     );
 
-    const onRemoveImage = useCallback((idx: number) => {
-      setImages((images) => {
-        images = images.filter((_, index) => index != idx);
-        onChange?.(images);
-        return images;
-      });
-    }, []);
+    const onRemoveImage = useCallback(
+      (idx: number) => {
+        const newImages = images.filter((_, index) => index != idx);
+        onChange?.(newImages);
+        setImages(newImages);
+      },
+      [images, onChange]
+    );
 
     return (
       <PhotoProvider {...photoProviderProps}>
@@ -232,6 +218,7 @@ export const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
                   className={dropzoneClassName}
                   width={width}
                   height={height}
+                  ref={dropzoneRef}
                 >
                   {children}
                 </Dropzone>
