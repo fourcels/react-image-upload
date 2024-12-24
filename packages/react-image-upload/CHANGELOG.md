@@ -1,5 +1,12 @@
 # @fourcels/react-image-upload
 
+## 0.6.0
+
+### Minor Changes
+
+- extract css
+- add ref props
+
 ## 0.5.13
 
 ### Patch Changes
