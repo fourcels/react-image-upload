@@ -1,5 +1,6 @@
 {
   "scripts": {
+    "shadcn:dev": "pnpm run dev & pnpm run -F shadcn dev",
     "docs:dev": "pnpm run dev & pnpm run -F docs start",
     "docs:build": "pnpm run build && pnpm run -F docs build",
     "docs:serve": "pnpm run -F docs serve",

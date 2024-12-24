@@ -18,6 +18,7 @@ pnpm add @fourcels/react-image-upload
 
 ```jsx
 import { ImageUpload } from "@fourcels/react-image-upload";
+import "@fourcels/react-image-upload/dist/index.css";
 
 function MyApp() {
   return <ImageUpload />;

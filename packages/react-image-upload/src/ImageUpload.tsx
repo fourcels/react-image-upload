@@ -83,7 +83,7 @@ export const ImageUpload = forwardRef<HTMLElement, ImageUploadProps>(
     const {
       width = 100,
       height = width,
-      value = [],
+      value,
       max = Infinity,
       onChange,
       onUpload = defaultUpload,
@@ -100,31 +100,31 @@ export const ImageUpload = forwardRef<HTMLElement, ImageUploadProps>(
 
     useImperativeHandle(ref, () => dropzoneRef.current);
 
-    const getImages = useCallback(() => {
-      let innerValue = value;
-      if (!Array.isArray(innerValue)) {
-        innerValue = [innerValue];
-      }
-
-      return innerValue
-        .map<ImageItem>((item) => {
-          if (typeof item === "string") {
-            item = { url: item };
-          }
-
-          return {
-            id: uuidv7(),
-            ...item,
-          };
-        })
-        .slice(0, max);
-    }, [value, max]);
-
-    const [images, setImages] = useState<ImageItem[]>(() => getImages());
+    const [images, setImages] = useState<ImageItem[]>([]);
 
     useEffect(() => {
-      setImages(getImages());
-    }, [getImages]);
+      let newImages = [];
+      if (value) {
+        let innerValue = value;
+        if (!Array.isArray(innerValue)) {
+          innerValue = [innerValue];
+        }
+
+        newImages = innerValue
+          .map<ImageItem>((item) => {
+            if (typeof item === "string") {
+              item = { url: item };
+            }
+
+            return {
+              id: uuidv7(),
+              ...item,
+            };
+          })
+          .slice(0, max);
+      }
+      setImages(newImages);
+    }, [value, max]);
 
     const onDropAccepted = useCallback(
       async (acceptedFiles: File[]) => {
@@ -139,7 +139,7 @@ export const ImageUpload = forwardRef<HTMLElement, ImageUploadProps>(
         const newImages = images.concat(addImages);
         setImages(newImages);
         Promise.all(
-          newImages.map(async (item) => {
+          addImages.map(async (item) => {
             item.url = await onUpload?.(item.file);
             item.loading = false;
             setImages((images) => {
