@@ -1,5 +1,11 @@
 # @fourcels/react-image-upload
 
+## 0.6.2
+
+### Patch Changes
+
+- feat: export style.css
+
 ## 0.6.1
 
 ### Patch Changes

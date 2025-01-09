@@ -18,7 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 
 import { ImageUpload } from "@fourcels/react-image-upload";
-import "@fourcels/react-image-upload/dist/index.css";
+import "@fourcels/react-image-upload/style.css";
 
 const FormSchema = z.object({
   username: z.string().min(2, {
