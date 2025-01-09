@@ -5,30 +5,51 @@ sidebar_position: 2
 
 ## ImageUploadProps
 
-| Name               | Description                             | Type                                                                                                       | Default                                   |
-| ------------------ | --------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
-| children           | custom upload zone                      | React.ReactNode                                                                                            |                                           |
-| width              | image width                             | `number`                                                                                                   | 100                                       |
-| height             | image height                            | `number`                                                                                                   | `width`                                   |
-| value              | default images                          | `string` \| `ImageItem` \| `(string \| ImageItem)[]`                                                       | []                                        |
-| onChange           | callback for when the images changes    | (value: `ImageItem[]`) => void                                                                             |                                           |
-| onUpload           | callback for when the drop event occurs | (file: `File`) => `string` \| `Promise<string>`                                                            | (file: File) => URL.createObjectURL(file) |
-| max                | max image number                        | `number`                                                                                                   | Infinity                                  |
-| readonly           | for preview                             | `boolean`                                                                                                  |                                           |
-| className          | root className                          | `string`                                                                                                   |                                           |
-| itemClassName      | image className                         | `string`                                                                                                   |                                           |
-| dropzoneClassName  | dropzone className                      | `string`                                                                                                   |                                           |
-| dropzoneOptions    |                                         | [DropzoneOptions](https://react-dropzone.js.org/#section-components)                                       |                                           |
-| photoProviderProps |                                         | Omit\<[PhotoProviderProps](https://react-photo-view.vercel.app/en-US/docs/api#photoprovider), "children"\> |                                           |
+| Name               | Description                             | Type                                                    | Default          |
+| ------------------ | --------------------------------------- | ------------------------------------------------------- | ---------------- |
+| children           | custom upload zone                      | React.ReactNode                                         |                  |
+| width              | image width                             | `number`                                                | 100              |
+| height             | image height                            | `number`                                                | `width`          |
+| value              | default images                          | `ValueType`                                             |                  |
+| onChange           | callback for when the images changes    | (value: `ValueType`) => void                            |                  |
+| transform          | transform images to value               | (images: `ImageItem[]`, max: number) => `ValueType`     | defaultTransform |
+| onUpload           | callback for when the drop event occurs | (file: `File`) => `string` \| `Promise<string>`         | defaultUpload    |
+| max                | max image number                        | `number`                                                | Infinity         |
+| readonly           | for preview                             | `boolean`                                               |                  |
+| className          | root className                          | `string`                                                |                  |
+| itemClassName      | image className                         | `string`                                                |                  |
+| dropzoneClassName  | dropzone className                      | `string`                                                |                  |
+| dropzoneOptions    |                                         | [DropzoneOptions][dropdown-url]                         |                  |
+| photoProviderProps |                                         | Omit\<[PhotoProviderProps][photoview-url], "children"\> |                  |
 
-### Types
+[dropdown-url]: https://react-dropzone.js.org/#section-components
+[photoview-url]: https://react-photo-view.vercel.app/en-US/docs/api#photoprovider
+
+### Types & Defaults
 
 ```ts
+type ValueItem = {
+  url: string;
+  name?: string;
+};
+
+type ValueType = string | ValueItem | (string | ValueItem)[];
+
 type ImageItem = {
   id?: string;
   url?: string;
   name?: string;
   file?: File;
   loading?: boolean;
+};
+
+const defaultUpload = (file: File) => URL.createObjectURL(file);
+
+const defaultTransform = (images: ImageItem[], max: number): ValueType => {
+  const value = images.map((item) => item.url);
+  if (max === 1) {
+    return value.join(",");
+  }
+  return value;
 };
 ```

@@ -24,9 +24,10 @@ const FormSchema = z.object({
   username: z.string().min(2, {
     message: "Username must be at least 2 characters.",
   }),
-  images: z.any().array().min(1, {
+  images: z.string().array().min(1, {
     message: "Please upload at least one image.",
   }),
+  avatar: z.string().optional(),
 });
 
 export function InputForm() {
@@ -83,6 +84,19 @@ export function InputForm() {
               <FormDescription>
                 This is your public display name.
               </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="avatar"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Avatar</FormLabel>
+              <FormControl>
+                <ImageUpload max={1} {...field} />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}

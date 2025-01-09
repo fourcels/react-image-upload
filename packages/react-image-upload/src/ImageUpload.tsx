@@ -15,7 +15,7 @@ import "react-photo-view/dist/react-photo-view.css";
 import "./style.css";
 import { PhotoProviderProps } from "react-photo-view/dist/PhotoProvider";
 import { Dropzone } from "./Dropzone";
-import { use } from "motion/react-client";
+import { image, use } from "motion/react-client";
 
 const RemoveIcon = () => (
   <svg
@@ -52,6 +52,13 @@ const PreviewIcon = () => (
   </svg>
 );
 
+type ValueItem = {
+  url: string;
+  name?: string;
+};
+
+type ValueType = string | ValueItem | (string | ValueItem)[];
+
 type ImageItem = {
   id?: string;
   url?: string;
@@ -60,15 +67,27 @@ type ImageItem = {
   loading?: boolean;
 };
 
+const checkValue = (a: ValueType, b: ValueType) => {
+  return a === b || JSON.stringify(a) === JSON.stringify(b);
+};
+
 const defaultUpload = (file: File) => URL.createObjectURL(file);
+const defaultTransform = (images: ImageItem[], max: number): ValueType => {
+  const value = images.map((item) => item.url);
+  if (max === 1) {
+    return value.join(",");
+  }
+  return value;
+};
 
 export type ImageUploadProps = {
   width?: number;
   height?: number;
   dropzoneOptions?: DropzoneOptions;
   photoProviderProps?: Omit<PhotoProviderProps, "children">;
-  value?: string | ImageItem | (string | ImageItem)[];
-  onChange?: (value: ImageItem[]) => void;
+  value?: ValueType;
+  onChange?: (value: ValueType) => void;
+  transform?: (value: ImageItem[], max: number) => ValueType;
   max?: number;
   onUpload?: (file: File) => string | Promise<string>;
   readonly?: boolean;
@@ -87,6 +106,7 @@ export const ImageUpload = forwardRef<HTMLElement, ImageUploadProps>(
       max = Infinity,
       onChange,
       onUpload = defaultUpload,
+      transform = defaultTransform,
       readonly,
       dropzoneOptions,
       photoProviderProps,
@@ -96,6 +116,7 @@ export const ImageUpload = forwardRef<HTMLElement, ImageUploadProps>(
       children,
     } = props;
 
+    const valueRef = useRef<ValueType>();
     const dropzoneRef = useRef<HTMLElement>(null);
 
     useImperativeHandle(ref, () => dropzoneRef.current);
@@ -103,6 +124,9 @@ export const ImageUpload = forwardRef<HTMLElement, ImageUploadProps>(
     const [images, setImages] = useState<ImageItem[]>([]);
 
     useEffect(() => {
+      if (checkValue(valueRef.current, value)) {
+        return;
+      }
       let newImages = [];
       if (value) {
         let innerValue = value;
@@ -123,8 +147,17 @@ export const ImageUpload = forwardRef<HTMLElement, ImageUploadProps>(
           })
           .slice(0, max);
       }
+      valueRef.current = value;
       setImages(newImages);
     }, [value, max]);
+
+    const onChangeInner = useCallback(
+      (images: ImageItem[]) => {
+        valueRef.current = transform?.(images, max);
+        onChange?.(valueRef.current);
+      },
+      [transform, onChange, max]
+    );
 
     const onDropAccepted = useCallback(
       async (acceptedFiles: File[]) => {
@@ -146,7 +179,7 @@ export const ImageUpload = forwardRef<HTMLElement, ImageUploadProps>(
               return [...images];
             });
           })
-        ).then(() => onChange?.(newImages));
+        ).then(() => onChangeInner(newImages));
       },
       [images, max, onChange]
     );
@@ -154,7 +187,7 @@ export const ImageUpload = forwardRef<HTMLElement, ImageUploadProps>(
     const onRemoveImage = useCallback(
       (idx: number) => {
         const newImages = images.filter((_, index) => index != idx);
-        onChange?.(newImages);
+        onChangeInner(newImages);
         setImages(newImages);
       },
       [images, onChange]

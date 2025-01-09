@@ -1,5 +1,11 @@
 # @fourcels/react-image-upload
 
+## 0.6.1
+
+### Patch Changes
+
+- feat: add transform
+
 ## 0.6.0
 
 ### Minor Changes

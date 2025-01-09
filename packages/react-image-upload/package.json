@@ -1,6 +1,6 @@
 {
   "name": "@fourcels/react-image-upload",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "type": "module",
   "description": "A image upload component for React",
   "main": "./dist/index.js",
