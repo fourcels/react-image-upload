@@ -1,7 +1,6 @@
 import { DropzoneOptions, useDropzone } from "react-dropzone";
 import clsx from "clsx";
 import { forwardRef, useImperativeHandle } from "react";
-import { u } from "motion/react-client";
 
 const PlusIcon = () => (
   <svg

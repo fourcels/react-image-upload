@@ -1,5 +1,11 @@
 # @fourcels/react-image-upload
 
+## 0.6.3
+
+### Patch Changes
+
+- remove unused import
+
 ## 0.6.2
 
 ### Patch Changes

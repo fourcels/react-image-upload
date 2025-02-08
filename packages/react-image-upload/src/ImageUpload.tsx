@@ -15,7 +15,6 @@ import "react-photo-view/dist/react-photo-view.css";
 import "./style.css";
 import { PhotoProviderProps } from "react-photo-view/dist/PhotoProvider";
 import { Dropzone } from "./Dropzone";
-import { image, use } from "motion/react-client";
 
 const RemoveIcon = () => (
   <svg
@@ -60,7 +59,7 @@ type ValueItem = {
 type ValueType = string | ValueItem | (string | ValueItem)[];
 
 type ImageItem = {
-  id?: string;
+  id: string;
   url?: string;
   name?: string;
   file?: File;
