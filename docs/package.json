@@ -27,12 +27,12 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
     "@docusaurus/module-type-aliases": "^3.7.0",
     "@docusaurus/tsconfig": "^3.7.0",
     "@docusaurus/types": "^3.7.0",
-    "typescript": "^5.7.3"
+    "@types/react": "^18.3.21",
+    "@types/react-dom": "^18.3.7",
+    "typescript": "^5.8.3"
   },
   "browserslist": {
     "production": [

@@ -1,1 +1,0 @@
-./packages/react-image-upload/README.md
