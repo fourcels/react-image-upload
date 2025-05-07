@@ -3,19 +3,18 @@ title: API
 sidebar_position: 2
 ---
 
-## ImageUploadProps
+## ImageUpload
 
 | Name               | Description                             | Type                                                    | Default          |
 | ------------------ | --------------------------------------- | ------------------------------------------------------- | ---------------- |
 | children           | custom upload zone                      | React.ReactNode                                         |                  |
 | width              | image width                             | `number`                                                | 100              |
 | height             | image height                            | `number`                                                | `width`          |
-| value              | default images                          | `ValueType`                                             |                  |
+| value              | images                                  | `ValueType`                                             |                  |
 | onChange           | callback for when the images changes    | (value: `ValueType`) => void                            |                  |
 | transform          | transform images to value               | (images: `ImageItem[]`, max: number) => `ValueType`     | defaultTransform |
 | onUpload           | callback for when the drop event occurs | (file: `File`) => `string` \| `Promise<string>`         | defaultUpload    |
 | max                | max image number                        | `number`                                                | Infinity         |
-| readonly           | for preview                             | `boolean`                                               |                  |
 | className          | root className                          | `string`                                                |                  |
 | itemClassName      | image className                         | `string`                                                |                  |
 | dropzoneClassName  | dropzone className                      | `string`                                                |                  |
@@ -53,3 +52,21 @@ const defaultTransform = (images: ImageItem[], max: number): ValueType => {
   return value;
 };
 ```
+
+## ImagePreview
+
+| Name               | Description        | Type                                                    | Default |
+| ------------------ | ------------------ | ------------------------------------------------------- | ------- |
+| width              | image width        | `number`                                                | 100     |
+| height             | image height       | `number`                                                | `width` |
+| value              | images             | `ValueType`                                             |         |
+| placeholder        | placeholder images | `ValueType`                                             |         |
+| className          | root className     | `string`                                                |         |
+| itemClassName      | image className    | `string`                                                |         |
+| photoProviderProps |                    | Omit\<[PhotoProviderProps][photoview-url], "children"\> |         |
+
+## ImageProvider
+
+| Name        | Description        | Type        | Default |
+| ----------- | ------------------ | ----------- | ------- |
+| placeholder | placeholder images | `ValueType` |         |

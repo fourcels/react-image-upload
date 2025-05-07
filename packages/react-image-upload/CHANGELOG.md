@@ -1,5 +1,11 @@
 # @fourcels/react-image-upload
 
+## 0.7.0
+
+### Minor Changes
+
+- feat: add ImagePreview
+
 ## 0.6.3
 
 ### Patch Changes

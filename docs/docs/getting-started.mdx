@@ -57,15 +57,28 @@ function MyApp() {
 </ImageUpload>
 ```
 
-### Readonly
+### Preview
 
 ```jsx live
-<ImageUpload
+<ImagePreview
   value={[
     "/react-image-upload/img/undraw_docusaurus_mountain.svg",
     "/react-image-upload/img/undraw_docusaurus_react.svg",
     "/react-image-upload/img/undraw_docusaurus_tree.svg",
   ]}
-  readonly
 />
+```
+
+### Preview - Placeholder
+
+```jsx live
+<ImagePreview placeholder="/react-image-upload/img/undraw_docusaurus_mountain.svg" />
+```
+
+### Preview - Provider Placeholder
+
+```jsx live
+<ImageProvider placeholder="/react-image-upload/img/undraw_docusaurus_mountain.svg">
+  <ImagePreview />
+</ImageProvider>
 ```

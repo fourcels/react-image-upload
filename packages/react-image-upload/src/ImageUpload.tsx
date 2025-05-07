@@ -1,22 +1,13 @@
-import React, {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from "react";
+import React, { Ref, useCallback, useEffect, useRef, useState } from "react";
 import { DropzoneOptions } from "react-dropzone";
 import { PhotoProvider, PhotoView } from "react-photo-view";
 import { v7 as uuidv7 } from "uuid";
 import clsx from "clsx";
 import { motion, AnimatePresence } from "motion/react";
-import "react-photo-view/dist/react-photo-view.css";
-import "./style.css";
 import { PhotoProviderProps } from "react-photo-view/dist/PhotoProvider";
 import { Dropzone } from "./Dropzone";
 
-const RemoveIcon = () => (
+export const RemoveIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="20"
@@ -34,7 +25,7 @@ const RemoveIcon = () => (
   </svg>
 );
 
-const PreviewIcon = () => (
+export const PreviewIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="20"
@@ -51,14 +42,14 @@ const PreviewIcon = () => (
   </svg>
 );
 
-type ValueItem = {
+export type ValueItem = {
   url: string;
   name?: string;
 };
 
-type ValueType = string | ValueItem | (string | ValueItem)[];
+export type ValueType = string | ValueItem | (string | ValueItem)[];
 
-type ImageItem = {
+export type ImageItem = {
   id: string;
   url?: string;
   name?: string;
@@ -89,178 +80,163 @@ export type ImageUploadProps = {
   transform?: (value: ImageItem[], max: number) => ValueType;
   max?: number;
   onUpload?: (file: File) => string | Promise<string>;
-  readonly?: boolean;
   className?: string;
   itemClassName?: string;
   dropzoneClassName?: string;
   children?: React.ReactNode;
 };
 
-export const ImageUpload = forwardRef<HTMLElement, ImageUploadProps>(
-  (props, ref) => {
-    const {
-      width = 100,
-      height = width,
-      value,
-      max = Infinity,
-      onChange,
-      onUpload = defaultUpload,
-      transform = defaultTransform,
-      readonly,
-      dropzoneOptions,
-      photoProviderProps,
-      className,
-      itemClassName,
-      dropzoneClassName,
-      children,
-    } = props;
+export const ImageUpload = (props: ImageUploadProps) => {
+  const {
+    width = 100,
+    height = width,
+    value,
+    max = Infinity,
+    onChange,
+    onUpload = defaultUpload,
+    transform = defaultTransform,
+    dropzoneOptions,
+    photoProviderProps,
+    className,
+    itemClassName,
+    dropzoneClassName,
+    children,
+  } = props;
 
-    const valueRef = useRef<ValueType>();
-    const dropzoneRef = useRef<HTMLElement>(null);
+  const valueRef = useRef<ValueType>(null);
 
-    useImperativeHandle(ref, () => dropzoneRef.current);
+  const [images, setImages] = useState<ImageItem[]>([]);
 
-    const [images, setImages] = useState<ImageItem[]>([]);
-
-    useEffect(() => {
-      if (checkValue(valueRef.current, value)) {
-        return;
+  useEffect(() => {
+    if (checkValue(valueRef.current, value)) {
+      return;
+    }
+    let newImages = [];
+    if (value) {
+      let innerValue = value;
+      if (!Array.isArray(innerValue)) {
+        innerValue = [innerValue];
       }
-      let newImages = [];
-      if (value) {
-        let innerValue = value;
-        if (!Array.isArray(innerValue)) {
-          innerValue = [innerValue];
-        }
 
-        newImages = innerValue
-          .map<ImageItem>((item) => {
-            if (typeof item === "string") {
-              item = { url: item };
-            }
+      newImages = innerValue
+        .map<ImageItem>((item) => {
+          if (typeof item === "string") {
+            item = { url: item };
+          }
 
-            return {
-              id: uuidv7(),
-              ...item,
-            };
-          })
-          .slice(0, max);
-      }
-      valueRef.current = value;
-      setImages(newImages);
-    }, [value, max]);
-
-    const onChangeInner = useCallback(
-      (images: ImageItem[]) => {
-        valueRef.current = transform?.(images, max);
-        onChange?.(valueRef.current);
-      },
-      [transform, onChange, max]
-    );
-
-    const onDropAccepted = useCallback(
-      async (acceptedFiles: File[]) => {
-        const addImages = acceptedFiles
-          .slice(0, max - images.length)
-          .map<ImageItem>((file) => ({
+          return {
             id: uuidv7(),
-            name: file.name,
-            loading: true,
-            file,
-          }));
-        const newImages = images.concat(addImages);
-        setImages(newImages);
-        Promise.all(
-          addImages.map(async (item) => {
-            item.url = await onUpload?.(item.file);
-            item.loading = false;
-            setImages((images) => {
-              return [...images];
-            });
-          })
-        ).then(() => onChangeInner(newImages));
-      },
-      [images, max, onChange]
-    );
+            ...item,
+          };
+        })
+        .slice(0, max);
+    }
+    valueRef.current = value;
+    setImages(newImages);
+  }, [value, max]);
 
-    const onRemoveImage = useCallback(
-      (idx: number) => {
-        const newImages = images.filter((_, index) => index != idx);
-        onChangeInner(newImages);
-        setImages(newImages);
-      },
-      [images, onChange]
-    );
+  const onChangeInner = useCallback(
+    (images: ImageItem[]) => {
+      valueRef.current = transform?.(images, max);
+      onChange?.(valueRef.current);
+    },
+    [transform, onChange, max]
+  );
 
-    return (
-      <PhotoProvider {...photoProviderProps}>
-        <div className={clsx("ImageUpload__root", className)}>
-          <AnimatePresence mode="popLayout">
-            {images.map((item, idx) => (
-              <motion.div
-                key={item.id}
-                className={clsx("ImageUpload__item", itemClassName)}
-                style={{ height, width }}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
+  const onDropAccepted = useCallback(
+    async (acceptedFiles: File[]) => {
+      const addImages = acceptedFiles
+        .slice(0, max - images.length)
+        .map<ImageItem>((file) => ({
+          id: uuidv7(),
+          name: file.name,
+          loading: true,
+          file,
+        }));
+      const newImages = images.concat(addImages);
+      setImages(newImages);
+      Promise.all(
+        addImages.map(async (item) => {
+          item.url = await onUpload?.(item.file);
+          item.loading = false;
+          setImages((images) => {
+            return [...images];
+          });
+        })
+      ).then(() => onChangeInner(newImages));
+    },
+    [images, max, onChange]
+  );
+
+  const onRemoveImage = useCallback(
+    (idx: number) => {
+      const newImages = images.filter((_, index) => index != idx);
+      onChangeInner(newImages);
+      setImages(newImages);
+    },
+    [images, onChange]
+  );
+
+  return (
+    <PhotoProvider {...photoProviderProps}>
+      <div className={clsx("ImageUpload__root", className)}>
+        <AnimatePresence mode="popLayout">
+          {images.map((item, idx) => (
+            <motion.div
+              key={item.id}
+              className={clsx("ImageUpload__item", itemClassName)}
+              style={{ height, width }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              {item.loading ? (
+                <div className="ImageUpload__loading"></div>
+              ) : (
+                <>
+                  <img
+                    src={item.url}
+                    className="ImageUpload__img"
+                    alt={item.name}
+                  />
+                  <PhotoView src={item.url}>
+                    <div className="ImageUpload__preview" title="Preview image">
+                      <PreviewIcon />
+                    </div>
+                  </PhotoView>
+                  <span
+                    onClick={() => onRemoveImage(idx)}
+                    className="ImageUpload__remove"
+                    title="Remove image"
+                  >
+                    <RemoveIcon />
+                  </span>
+                </>
+              )}
+            </motion.div>
+          ))}
+          {images.length < max && (
+            <motion.div
+              key="dropzone"
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <Dropzone
+                options={{
+                  onDropAccepted,
+                  accept: { "image/*": [] },
+                  ...dropzoneOptions,
+                }}
+                className={dropzoneClassName}
+                width={width}
+                height={height}
               >
-                {item.loading ? (
-                  <div className="ImageUpload__loading"></div>
-                ) : (
-                  <>
-                    <img
-                      src={item.url}
-                      className="ImageUpload__img"
-                      alt={item.name}
-                    />
-                    <PhotoView src={item.url}>
-                      <div
-                        className="ImageUpload__preview"
-                        title="Preview image"
-                      >
-                        <PreviewIcon />
-                      </div>
-                    </PhotoView>
-                    {!readonly && (
-                      <span
-                        onClick={() => onRemoveImage(idx)}
-                        className="ImageUpload__remove"
-                        title="Remove image"
-                      >
-                        <RemoveIcon />
-                      </span>
-                    )}
-                  </>
-                )}
-              </motion.div>
-            ))}
-            {!readonly && images.length < max && (
-              <motion.div
-                key="dropzone"
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                <Dropzone
-                  options={{
-                    onDropAccepted,
-                    accept: { "image/*": [] },
-                    ...dropzoneOptions,
-                  }}
-                  className={dropzoneClassName}
-                  width={width}
-                  height={height}
-                  ref={dropzoneRef}
-                >
-                  {children}
-                </Dropzone>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </PhotoProvider>
-    );
-  }
-);
-
-ImageUpload.displayName = "ImageUpload";
+                {children}
+              </Dropzone>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </PhotoProvider>
+  );
+};
