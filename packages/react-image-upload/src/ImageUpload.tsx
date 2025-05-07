@@ -1,4 +1,4 @@
-import React, { Ref, useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { DropzoneOptions } from "react-dropzone";
 import { PhotoProvider, PhotoView } from "react-photo-view";
 import { v7 as uuidv7 } from "uuid";
